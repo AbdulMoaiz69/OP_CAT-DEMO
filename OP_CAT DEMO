@@ -1,0 +1,47 @@
+class BitcoinScriptInterpreter:
+    def __init__(self):
+        self.stack = []
+
+    def op_cat(self):
+        if len(self.stack) < 2:
+            print("Error: Insufficient items on the stack for OP_CAT.")
+            return
+
+        value1 = self.stack[-2]
+        value2 = self.stack[-1]
+
+        # Simulating the check for maximum script element size (520 Bytes)
+        if len(value1) + len(value2) > 520:
+            print("Error: Combined size exceeds maximum script element size.")
+            return
+
+        concatenated_value = value1 + value2
+
+        # Pop the top two values and push the result onto the stack
+        self.stack.pop()
+        self.stack.pop()
+        self.stack.append(concatenated_value)
+
+    def execute_script(self, script):
+        for opcode in script:
+            if opcode == "OP_CAT":
+                self.op_cat()
+            else:
+                # For simplicity, assume other opcodes just push values onto the stack
+                self.stack.append(opcode)
+
+# User input
+value1 = input("Enter the first value: ")
+value2 = input("Enter the second value: ")
+
+# Example script using OP_CAT
+bitcoin_script = [value1, value2, "OP_CAT", "value3", "OP_CAT"]
+
+# Create a BitcoinScriptInterpreter instance
+interpreter = BitcoinScriptInterpreter()
+
+# Execute the script
+interpreter.execute_script(bitcoin_script)
+
+# Print the final stack
+print("Final Stack:", interpreter.stack)
